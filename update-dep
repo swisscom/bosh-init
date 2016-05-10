@@ -49,4 +49,6 @@ if [ $found -ne 0 ]; then
 	echo $package_name:$sha >> deps.txt
 fi	
 
-find . -name vendor -type d -mindepth 2 -exec rm -r {} \;
+# destroy sub-vendored dependencies because they could cause type mismatches
+# between our locally vendored types and the vendored vendored type
+find . -name vendor -type d -mindepth 2 | sort -r | xargs rm -rf {}
