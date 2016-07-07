@@ -88,18 +88,18 @@ You may alternatively choose to download them to a local directory and specify t
 To take advantage of this feature, export the following variables prior to running the tests (absolute paths are required):
 
 ```
-$ export BOSH_INIT_CPI_RELEASE_PATH=/tmp/bosh-warden-cpi-9.tgz
-$ export BOSH_INIT_STEMCELL_PATH=/tmp/bosh-stemcell-348-warden-boshlite-ubuntu-trusty-go_agent.tgz
+$ export BOSH_CPI_RELEASE_PATH=/tmp/bosh-warden-cpi-9.tgz
+$ export BOSH_STEMCELL_PATH=/tmp/bosh-stemcell-348-warden-boshlite-ubuntu-trusty-go_agent.tgz
 $ ./bin/test-acceptance-with-vm --provider=virtualbox
 ```
 
 You can use remote releases and stemcells which you can overwrite using environment variables below. In this case you also need to provide sha1 of remote artifacts you want to test.
 
 ```
-$ export BOSH_INIT_CPI_RELEASE_URL=https://bosh.io/d/github.com/cppforlife/bosh-warden-cpi-release?v=6
-$ export BOSH_INIT_CPI_RELEASE_SHA1=cpi-release-sha1
-$ export BOSH_INIT_STEMCELL_URL=https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-trusty-go_agent?v=2776
-$ export BOSH_INIT_STEMCELL_SHA1=stemcell-sha1
+$ export BOSH_CPI_RELEASE_URL=https://bosh.io/d/github.com/cppforlife/bosh-warden-cpi-release?v=6
+$ export BOSH_CPI_RELEASE_SHA1=cpi-release-sha1
+$ export BOSH_STEMCELL_URL=https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-trusty-go_agent?v=2776
+$ export BOSH_STEMCELL_SHA1=stemcell-sha1
 $ ./bin/test-acceptance-with-vm --provider=virtualbox
 ```
 
@@ -110,7 +110,7 @@ The acceptance tests can also be run on a remote VM (using aws with vagrant).
 When using the AWS provider, you will need to provide the following:
 
 ```
-export BOSH_INIT_PRIVATE_KEY=~/tmp/bosh-dev.key
+export BOSH_PRIVATE_KEY=~/tmp/bosh-dev.key
 
 # The following variables are required by Bosh Lite
 export BOSH_AWS_ACCESS_KEY_ID=foo
@@ -119,12 +119,12 @@ export BOSH_LITE_KEYPAIR=bosh-dev
 export BOSH_LITE_SUBNET_ID=subnet-1234
 export BOSH_LITE_NAME=baz
 export BOSH_LITE_SECURITY_GROUP=sg-1234
-export BOSH_LITE_PRIVATE_KEY=$BOSH_INIT_PRIVATE_KEY
+export BOSH_LITE_PRIVATE_KEY=$BOSH_PRIVATE_KEY
 ```
 
 ##### Running tests against existing VM
 
-Acceptance tests use configuration file specified via `BOSH_INIT_CONFIG_PATH`. The format of the configuration file is basic JSON.
+Acceptance tests use configuration file specified via `BOSH_CONFIG_PATH`. The format of the configuration file is basic JSON.
 
 ```
 {
@@ -145,7 +145,7 @@ Acceptance tests use configuration file specified via `BOSH_INIT_CONFIG_PATH`. T
 Run acceptance tests:
 
 ```
-BOSH_INIT_CONFIG_PATH=config.json bin/test-acceptance
+BOSH_CONFIG_PATH=config.json bin/test-acceptance
 ```
 
 ## Debugging Acceptance Test Failures

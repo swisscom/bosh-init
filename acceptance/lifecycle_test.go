@@ -23,7 +23,7 @@ const (
 	stageCompiledPackageSkippedPattern = "\\.\\.\\. Skipped \\[Package already compiled\\] " + stageTimePattern + "$"
 )
 
-var _ = Describe("bosh-init", func() {
+var _ = Describe("bosh", func() {
 	var (
 		logger       boshlog.Logger
 		fileSystem   boshsys.FileSystem
@@ -120,7 +120,7 @@ var _ = Describe("bosh-init", func() {
 		stdout := &bytes.Buffer{}
 		multiWriter := io.MultiWriter(stdout, GinkgoWriter)
 
-		_, _, exitCode, err := sshCmdRunner.RunStreamingCommand(multiWriter, cmdEnv, testEnv.Path("bosh-init"), "deploy", testEnv.Path(manifestFile))
+		_, _, exitCode, err := sshCmdRunner.RunStreamingCommand(multiWriter, cmdEnv, testEnv.Path("bosh"), "deploy", testEnv.Path(manifestFile))
 		Expect(err).ToNot(HaveOccurred())
 		Expect(exitCode).To(Equal(0))
 
@@ -133,7 +133,7 @@ var _ = Describe("bosh-init", func() {
 		stdout := &bytes.Buffer{}
 		multiWriter := io.MultiWriter(stdout, GinkgoWriter)
 
-		_, _, exitCode, err := sshCmdRunner.RunStreamingCommand(multiWriter, cmdEnv, testEnv.Path("bosh-init"), "deploy", testEnv.Path("test-manifest.yml"))
+		_, _, exitCode, err := sshCmdRunner.RunStreamingCommand(multiWriter, cmdEnv, testEnv.Path("bosh"), "deploy", testEnv.Path("test-manifest.yml"))
 		Expect(err).To(HaveOccurred())
 		Expect(exitCode).To(Equal(1))
 
@@ -146,7 +146,7 @@ var _ = Describe("bosh-init", func() {
 		stdout := &bytes.Buffer{}
 		multiWriter := io.MultiWriter(stdout, GinkgoWriter)
 
-		_, _, exitCode, err := sshCmdRunner.RunStreamingCommand(multiWriter, cmdEnv, testEnv.Path("bosh-init"), "delete", testEnv.Path("test-manifest.yml"))
+		_, _, exitCode, err := sshCmdRunner.RunStreamingCommand(multiWriter, cmdEnv, testEnv.Path("bosh"), "delete", testEnv.Path("test-manifest.yml"))
 		Expect(err).ToNot(HaveOccurred())
 		Expect(exitCode).To(Equal(0))
 
@@ -219,25 +219,25 @@ var _ = Describe("bosh-init", func() {
 		)
 		cmdEnv = map[string]string{
 			"TMPDIR":              testEnv.Home(),
-			"BOSH_INIT_LOG_LEVEL": "DEBUG",
-			"BOSH_INIT_LOG_PATH":  testEnv.Path("bosh-init.log"),
+			"BOSH_LOG_LEVEL": "DEBUG",
+			"BOSH_LOG_PATH":  testEnv.Path("bosh.log"),
 		}
 		quietCmdEnv = map[string]string{
 			"TMPDIR":              testEnv.Home(),
-			"BOSH_INIT_LOG_LEVEL": "ERROR",
-			"BOSH_INIT_LOG_PATH":  testEnv.Path("bosh-init-cleanup.log"),
+			"BOSH_LOG_LEVEL": "ERROR",
+			"BOSH_LOG_PATH":  testEnv.Path("bosh-cleanup.log"),
 		}
 
 		// clean up from previous failed tests
-		deleteLogFile(cmdEnv["BOSH_INIT_LOG_PATH"])
-		deleteLogFile(quietCmdEnv["BOSH_INIT_LOG_PATH"])
+		deleteLogFile(cmdEnv["BOSH_LOG_PATH"])
+		deleteLogFile(quietCmdEnv["BOSH_LOG_PATH"])
 
 		err = bitestutils.BuildExecutableForArch("linux-amd64")
 		Expect(err).NotTo(HaveOccurred())
 
-		boshInitPath := "./../out/bosh-init"
-		Expect(fileSystem.FileExists(boshInitPath)).To(BeTrue())
-		err = testEnv.Copy("bosh-init", boshInitPath)
+		boshPath := "./../out/bosh"
+		Expect(fileSystem.FileExists(boshPath)).To(BeTrue())
+		err = testEnv.Copy("bosh", boshPath)
 		Expect(err).NotTo(HaveOccurred())
 
 		instanceSSH = NewInstanceSSH(
@@ -272,13 +272,13 @@ var _ = Describe("bosh-init", func() {
 
 	Context("when deploying with a compiled release", func() {
 		AfterEach(func() {
-			flushLog(cmdEnv["BOSH_INIT_LOG_PATH"])
+			flushLog(cmdEnv["BOSH_LOG_PATH"])
 
 			// quietly delete the deployment
-			_, _, exitCode, err := sshCmdRunner.RunCommand(quietCmdEnv, testEnv.Path("bosh-init"), "delete", testEnv.Path("test-compiled-manifest.yml"))
+			_, _, exitCode, err := sshCmdRunner.RunCommand(quietCmdEnv, testEnv.Path("bosh"), "delete", testEnv.Path("test-compiled-manifest.yml"))
 			if exitCode != 0 || err != nil {
 				// only flush the delete log if the delete failed
-				flushLog(quietCmdEnv["BOSH_INIT_LOG_PATH"])
+				flushLog(quietCmdEnv["BOSH_LOG_PATH"])
 			}
 			Expect(err).ToNot(HaveOccurred())
 			Expect(exitCode).To(Equal(0))
@@ -358,13 +358,13 @@ var _ = Describe("bosh-init", func() {
 		deploymentManifest := "test-manifest.yml"
 
 		AfterEach(func() {
-			flushLog(cmdEnv["BOSH_INIT_LOG_PATH"])
+			flushLog(cmdEnv["BOSH_LOG_PATH"])
 
 			// quietly delete the deployment
-			_, _, exitCode, err := sshCmdRunner.RunCommand(quietCmdEnv, testEnv.Path("bosh-init"), "delete", testEnv.Path("test-manifest.yml"))
+			_, _, exitCode, err := sshCmdRunner.RunCommand(quietCmdEnv, testEnv.Path("bosh"), "delete", testEnv.Path("test-manifest.yml"))
 			if exitCode != 0 || err != nil {
 				// only flush the delete log if the delete failed
-				flushLog(quietCmdEnv["BOSH_INIT_LOG_PATH"])
+				flushLog(quietCmdEnv["BOSH_LOG_PATH"])
 			}
 			Expect(err).ToNot(HaveOccurred())
 			Expect(exitCode).To(Equal(0))
@@ -526,13 +526,13 @@ Command 'deploy' failed:
 
 	Context("when deploying with all network types", func() {
 		AfterEach(func() {
-			flushLog(cmdEnv["BOSH_INIT_LOG_PATH"])
+			flushLog(cmdEnv["BOSH_LOG_PATH"])
 
 			// quietly delete the deployment
-			_, _, exitCode, err := sshCmdRunner.RunCommand(quietCmdEnv, testEnv.Path("bosh-init"), "delete", testEnv.Path("test-manifest.yml"))
+			_, _, exitCode, err := sshCmdRunner.RunCommand(quietCmdEnv, testEnv.Path("bosh"), "delete", testEnv.Path("test-manifest.yml"))
 			if exitCode != 0 || err != nil {
 				// only flush the delete log if the delete failed
-				flushLog(quietCmdEnv["BOSH_INIT_LOG_PATH"])
+				flushLog(quietCmdEnv["BOSH_LOG_PATH"])
 			}
 			Expect(err).ToNot(HaveOccurred())
 			Expect(exitCode).To(Equal(0))
@@ -548,7 +548,7 @@ Command 'deploy' failed:
 
 	Context("when deploying with invalid usage", func() {
 		It("prints command help when command is called with invalid usage", func() {
-			stdout, stderr, exitCode, err := sshCmdRunner.RunCommand(cmdEnv, testEnv.Path("bosh-init"), "deploy")
+			stdout, stderr, exitCode, err := sshCmdRunner.RunCommand(cmdEnv, testEnv.Path("bosh"), "deploy")
 
 			Expect(err).To(HaveOccurred())
 			Expect(exitCode).To(Equal(1))

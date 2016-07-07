@@ -28,12 +28,12 @@ set -x
 export PATH=/usr/local/ruby/bin:/usr/local/go/bin:$PATH
 export GOPATH=$PWD/gopath
 
-export BOSH_INIT_CPI_RELEASE_PATH=`ls $PWD/cpi-release/*.tgz`
-export BOSH_INIT_CPI_RELEASE_URL=""
-export BOSH_INIT_CPI_RELEASE_SHA1=""
+export BOSH_CPI_RELEASE_PATH=`ls $PWD/cpi-release/*.tgz`
+export BOSH_CPI_RELEASE_URL=""
+export BOSH_CPI_RELEASE_SHA1=""
 
 set +x
-tmpfile=`mktemp -t bosh-init-tests-XXXXXXXX`
+tmpfile=`mktemp -t bosh-cli-tests-XXXXXXXX`
 echo "$BOSH_LITE_PRIVATE_KEY_DATA" > $tmpfile
 set -x
 

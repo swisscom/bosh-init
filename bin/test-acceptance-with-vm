@@ -26,29 +26,29 @@ cleanup() {
 }
 trap cleanup EXIT
 
-if [ ! -z ${BOSH_INIT_CPI_RELEASE_URL+x} ]; then
-  cpi_release_url=$BOSH_INIT_CPI_RELEASE_URL
+if [ ! -z ${BOSH_CPI_RELEASE_URL+x} ]; then
+  cpi_release_url=$BOSH_CPI_RELEASE_URL
 else
   cpi_release_url=https://bosh.io/d/github.com/cppforlife/bosh-warden-cpi-release?v=$cpi_release_version
 fi
 
-if [ ! -z ${BOSH_INIT_CPI_RELEASE_SHA1+x} ]; then
-  cpi_release_sha1=$BOSH_INIT_CPI_RELEASE_SHA1
+if [ ! -z ${BOSH_CPI_RELEASE_SHA1+x} ]; then
+  cpi_release_sha1=$BOSH_CPI_RELEASE_SHA1
 fi
 
-if [ ! -z ${BOSH_INIT_STEMCELL_URL+x} ]; then
-  stemcell_url=$BOSH_INIT_STEMCELL_URL
+if [ ! -z ${BOSH_STEMCELL_URL+x} ]; then
+  stemcell_url=$BOSH_STEMCELL_URL
 else
   stemcell_url=https://s3.amazonaws.com/bosh-dependencies/$stemcell_file
 fi
 
-if [ ! -z ${BOSH_INIT_STEMCELL_SHA1+x} ]; then
-  stemcell_sha1=$BOSH_INIT_STEMCELL_SHA1
+if [ ! -z ${BOSH_STEMCELL_SHA1+x} ]; then
+  stemcell_sha1=$BOSH_STEMCELL_SHA1
 fi
 
-dummy_release_path=${BOSH_INIT_DUMMY_RELEASE_PATH:-./assets/dummy-release.tgz}
-dummy_too_release_path=${BOSH_INIT_DUMMY_TOO_RELEASE_PATH:-./assets/dummy-too-release.tgz}
-dummy_compiled_release_path=${BOSH_INIT_DUMMY_COMPILED_RELEASE_PATH:-./assets/sample-release-compiled.tgz}
+dummy_release_path=${BOSH_DUMMY_RELEASE_PATH:-./assets/dummy-release.tgz}
+dummy_too_release_path=${BOSH_DUMMY_TOO_RELEASE_PATH:-./assets/dummy-too-release.tgz}
+dummy_compiled_release_path=${BOSH_DUMMY_COMPILED_RELEASE_PATH:-./assets/sample-release-compiled.tgz}
 
 # Vagrant needs ubuntu to own the private key if aws provider
 if [ ! -z "$BOSH_LITE_PRIVATE_KEY" ]; then
@@ -73,10 +73,10 @@ cat > $config_file <<EOF
   "vm_ip": "${vm_ip}",
   "vm_port": "${vm_port}",
   "private_key_path": "${private_key_path}",
-  "stemcell_path": "${BOSH_INIT_STEMCELL_PATH}",
+  "stemcell_path": "${BOSH_STEMCELL_PATH}",
   "stemcell_url": "${stemcell_url}",
   "stemcell_sha1": "${stemcell_sha1}",
-  "cpi_release_path": "${BOSH_INIT_CPI_RELEASE_PATH}",
+  "cpi_release_path": "${BOSH_CPI_RELEASE_PATH}",
   "cpi_release_url": "${cpi_release_url}",
   "cpi_release_sha1": "${cpi_release_sha1}",
   "dummy_release_path": "${dummy_release_path}",
@@ -85,6 +85,6 @@ cat > $config_file <<EOF
 }
 EOF
 
-export BOSH_INIT_CONFIG_PATH=$config_file
+export BOSH_CONFIG_PATH=$config_file
 
 ./bin/test-acceptance
